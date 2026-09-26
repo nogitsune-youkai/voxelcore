@@ -1,20 +1,20 @@
 {
     "version": 6,
     "configurePresets": [
-        {
-            "name": "default-vs-msvc-windows",
-            "condition": {
-                "type": "equals",
-                "rhs": "${hostSystemName}",
-                "lhs": "Windows"
-            },
-            "generator": "Visual Studio 17 2022",
-            "binaryDir": "${sourceDir}/build",
-            "cacheVariables": {
-                "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-                "VOXELENGINE_BUILD_TESTS": "ON"
-            }
+      {
+        "name": "default-vs-msvc-windows",
+        "condition": {
+          "type": "equals",
+          "rhs": "${hostSystemName}",
+          "lhs": "Windows"
         },
+        "generator": "Visual Studio 18 2026",
+        "binaryDir": "${sourceDir}/build",
+        "cacheVariables": {
+          "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+          "VOXELENGINE_BUILD_TESTS": "ON"
+        }
+      },
         {
             "name": "default-ninja-mingw-windows",
             "condition": {

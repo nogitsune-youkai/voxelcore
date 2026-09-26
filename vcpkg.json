@@ -1,20 +1,21 @@
 {
-    "name": "voxelengine",
-    "version-string": "1.0.0",
-    "dependencies": [
-      "opengl",
-      "openal-soft",
-      "glfw3",
-      "glew",
-      "glm",
-      "libpng",
-      "zlib",
-      "luajit",
-      "libvorbis",
-      "entt",
-      "gtest",
-      "curl",
-      "freetype",
-      "openssl"
-    ]
-  }
+  "name": "voxelengine",
+  "version-string": "1.0.0",
+  "builtin-baseline": "617ef1c0c422737d117eda00a471ea1be5bad088",
+  "dependencies": [
+    "opengl",
+    "openal-soft",
+    "glfw3",
+    "glew",
+    "glm",
+    "libpng",
+    "zlib",
+    "luajit",
+    "libvorbis",
+    "entt",
+    "gtest",
+    "curl",
+    "freetype",
+    "openssl"
+  ]
+}

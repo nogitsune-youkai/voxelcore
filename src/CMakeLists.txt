@@ -1,5 +1,5 @@
 project(VoxelEngineSrc)
-
+set(CMAKE_LINK_INTERFACE_LIBRARIES "")
 file(GLOB_RECURSE headers ${CMAKE_CURRENT_SOURCE_DIR}/*.hpp)
 file(GLOB_RECURSE sources ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 list(REMOVE_ITEM sources ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
@@ -27,36 +27,30 @@ endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     find_package(vorbis REQUIRED)
-    if(VCPKG_TARGET_TRIPLET MATCHES "static")
-        add_library(luajit STATIC IMPORTED)
-        set_target_properties(
-            luajit
-            PROPERTIES
-                IMPORTED_LOCATION
-                "$ENV{VCPKG_ROOT}/packages/luajit_${VCPKG_TARGET_TRIPLET}/lib/libluajit-5.1.a"
-                INTERFACE_INCLUDE_DIRECTORIES
-                "$ENV{VCPKG_ROOT}/packages/luajit_${VCPKG_TARGET_TRIPLET}/include/"
-        )
+
+    # vcpkg в режиме манифеста кладёт библиотеки в build/vcpkg_installed/<triplet>
+    set(LUAJIT_PACKAGE_DIR "${CMAKE_BINARY_DIR}/vcpkg_installed/${VCPKG_TARGET_TRIPLET}")
+
+    # Ищем заголовки в нескольких возможных местах
+    if(EXISTS "${LUAJIT_PACKAGE_DIR}/include/luajit-2.1")
+        set(LUAJIT_INCLUDE_DIR "${LUAJIT_PACKAGE_DIR}/include/luajit-2.1")
+    elseif(EXISTS "${LUAJIT_PACKAGE_DIR}/include/luajit")
+        set(LUAJIT_INCLUDE_DIR "${LUAJIT_PACKAGE_DIR}/include/luajit")
     else()
-        set(LUAJIT_PACKAGE_DIR "$ENV{VCPKG_ROOT}/packages/luajit_${VCPKG_TARGET_TRIPLET}")
-
-        if(EXISTS "$ENV{VCPKG_ROOT}/packages/luajit_${VCPKG_TARGET_TRIPLET}/include/luajit-2.1")
-            set(LUAJIT_INCLUDE_DIR "$ENV{VCPKG_ROOT}/packages/luajit_${VCPKG_TARGET_TRIPLET}/include/luajit-2.1")
-        else()
-            set(LUAJIT_INCLUDE_DIR "$ENV{VCPKG_ROOT}/packages/luajit_${VCPKG_TARGET_TRIPLET}/include/luajit")
-        endif()
-
-        add_library(luajit SHARED IMPORTED)
-        set_target_properties(
-            luajit
-            PROPERTIES
-                IMPORTED_LOCATION
-                "$ENV{VCPKG_ROOT}/packages/luajit_${VCPKG_TARGET_TRIPLET}/bin/lua51.dll"
-                IMPORTED_IMPLIB
-                "$ENV{VCPKG_ROOT}/packages/luajit_${VCPKG_TARGET_TRIPLET}/lib/lua51.lib"
-                INTERFACE_INCLUDE_DIRECTORIES "${LUAJIT_INCLUDE_DIR}"
-        )
+        set(LUAJIT_INCLUDE_DIR "${LUAJIT_PACKAGE_DIR}/include")
     endif()
+
+    # vcpkg собирает luajit как lua51.dll / lua51.lib
+    add_library(luajit SHARED IMPORTED)
+    set_target_properties(
+        luajit
+        PROPERTIES
+            IMPORTED_LOCATION
+            "${LUAJIT_PACKAGE_DIR}/bin/lua51.dll"
+            IMPORTED_IMPLIB
+            "${LUAJIT_PACKAGE_DIR}/lib/lua51.lib"
+            INTERFACE_INCLUDE_DIRECTORIES "${LUAJIT_INCLUDE_DIR}"
+    )
 
     add_library(luajit::luajit ALIAS luajit)
 else()
